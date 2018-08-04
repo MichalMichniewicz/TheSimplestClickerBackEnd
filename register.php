@@ -1,25 +1,35 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-$mysqlConnection = @mysql_connect("localhost", "thesimplestclicker", "nGpprYndtqZ9x2ym") or die(mysql_error());
-mysql_select_db("thesimplestclicker") or die(mysql_error());
+//echo "lalalal";
+$mysqlConnection = @mysql_connect("localhost", "jubel_clicker", "nGpprYndtqZ9x2ym") or die(mysql_error());
+mysql_select_db("jubel_clicker") or die(mysql_error());
 mysql_set_charset("utf8");
- 
-if ((isset($_GET['login']) && isset($_GET['password'])))
+$myObj = new \stdClass();
+
+$rest_json = file_get_contents("php://input"); 
+$_POST = json_decode($rest_json, true);
+
+if ((isset($_POST['login']) && isset($_POST['password'])))
 {
-    if (!empty($_GET['login']) && !empty($_GET['password']))
+    if (!empty($_POST['login']) && !empty($_POST['password']))
     {
-        $login = filter_var($_GET['login'], FILTER_SANITIZE_STRING);
-        $password = filter_var($_GET['password'], FILTER_SANITIZE_STRING);
+        http_response_code(200);
+        $login = filter_var($_POST['login'], FILTER_SANITIZE_STRING);
+        $password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
         $salt = "69fde8079d85efb8a603d37e39717cd4";
         
-        $query = "SELECT * FROM user WHERE name = '".$login."'";
+        $query = "SELECT count(1) FROM user WHERE name = '".$login."'";
         $result = mysql_query($query);
-        $rows = mysql_num_rows($result);
-        if ($rows>0)
+        $isExist = mysql_fetch_assoc($result);
+        foreach($isExist as $key => $value)
+                        {
+                            $is = $value;
+                        }
+        if ($is>0)
             {
-                $myObj = new \stdClass();
                 $myObj->value = "The given login exists.";
                 $myJSON = json_encode($myObj);
+                http_response_code(201);
                 echo $myJSON;
             }
         else 
@@ -28,7 +38,7 @@ if ((isset($_GET['login']) && isset($_GET['password'])))
                 $hashedName = hash("sha512", $salt.$login);
                 $insert_user = "INSERT INTO user (name, password, hashedName) VALUES ('$login','$pw', '$hashedName')";
                 $result = mysql_query($insert_user);
-                $myObj = new \stdClass();
+                
                 $myObj->value = "Your registration has been successful."; 
                 $myJSON = json_encode($myObj);
                 echo $myJSON;
