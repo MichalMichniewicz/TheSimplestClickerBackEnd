@@ -67,7 +67,7 @@ if ((isset($_POST['login']) && isset($_POST['password']) && isset($_POST['firstN
     }
     else {
         http_response_code(403);
-        $myObj->value = "You have not entered a login or password. Try again."; 
+        $myObj->value = "You have not entered a login or password or firstname or last name. Try again."; 
         $myJSON = json_encode($myObj);
         echo $myJSON;
         }
