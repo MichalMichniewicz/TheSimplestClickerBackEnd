@@ -9,12 +9,14 @@ $myObj = new \stdClass();
 $rest_json = file_get_contents("php://input"); 
 $_POST = json_decode($rest_json, true);
 
-if ((isset($_POST['login']) && isset($_POST['password'])))
+if ((isset($_POST['login']) && isset($_POST['password']) && isset($_POST['firstName']) && isset($_POST['lastName'])))
 {
-    if (!empty($_POST['login']) && !empty($_POST['password']))
+    if (!empty($_POST['login']) && !empty($_POST['password']) && !empty($_POST['firstName']) && !empty($_POST['lastName']))
     {
         $login = filter_var($_POST['login'], FILTER_SANITIZE_STRING);
         $password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+        $firstName = filter_var($_POST['firstName'], FILTER_SANITIZE_STRING);
+        $lastName = filter_var($_POST['lastName'], FILTER_SANITIZE_STRING);
         $salt = "69fde8079d85efb8a603d37e39717cd4";
         if (strlen($login)>16)
             {
@@ -50,7 +52,7 @@ if ((isset($_POST['login']) && isset($_POST['password'])))
                 {
                     $pw = hash("sha512", $salt.$password);
                     $hashedName = hash("sha512", $salt.$login);
-                    $insert_user = "INSERT INTO user (name, password, hashedName) VALUES ('$login','$pw', '$hashedName')";
+                    $insert_user = "INSERT INTO user (name, firstName, lastName, password, hashedName) VALUES ('$login', '$firstName', '$lastName', $pw', '$hashedName')";
                     $result = mysql_query($insert_user);
                 
                     $myObj->value = "Your registration has been successful."; 
